@@ -1,2 +1,4 @@
-# Waveguide-Mode-Solver-CPP
-Scalar Waveguide Mode Solver written in MATLAB. Optical spectra EM through linear media
+# About
+Scalar Waveguide Mode Solver. Rectangular crossection consisting of slabs 
+of different refractive indiced. Note to self, need to clean up files restructure code.
+lots of scratchwork. 

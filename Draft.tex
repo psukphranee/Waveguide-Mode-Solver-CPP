@@ -1,0 +1,196 @@
+\documentclass[letter]{article}
+
+\usepackage{fullpage} % Package to use full page
+%\usepackage{parskip} % Package to tweak paragraph skipping
+\usepackage{tikz} % Package for drawing
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{mathtools}
+\usepackage{listings}
+
+\usepackage{caption} 
+\captionsetup[table]{skip=10pt}
+
+\title{TEM Waves Draft}
+\author{Panya Sukphranee}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Draft}
+	
+	\indent We look for a numerical solution for \\
+	\begin{align*}
+		\vec{E} &=  E_0 U(x, y) e^{i(\omega t - \beta z)} \hat{y}
+	\end{align*}
+	in a waveguide with varying refractive indices along the $\hat{x}$ and $\hat{y}$ axes.
+	\begin{align*}
+		\frac{\partial^2 U}{\partial x^2} + \frac{\partial^2 U}{\partial y^2} - \beta^2 U &= - \mu \epsilon \omega^2 U \\
+		\frac{\partial^2 U}{\partial x^2} + \frac{\partial^2 U}{\partial y^2} + \mu \epsilon \omega^2 U &= \beta^2 U \\
+		\frac{\partial^2 U}{\partial x^2} + \frac{\partial^2 U}{\partial y^2} + n(x,y)^2 k_0^2 U &= \beta^2 U \\
+	\end{align*}		
+	Making the above discrete gives us\\
+	\begin{align*}
+		\frac{U_{i+1, j} + U_{i-1,j} - 2U_{i,j}}{\Delta x^2} + \frac{U_{i, j+1} + U_{i,j-1} - 2U_{i,j}}{\Delta y^2}
+			+ {n_{i,j}}^2 k_0^2 U_{i,j} &= \beta^2 U_{i,j} \\
+	\end{align*}
+	$\Delta y \rightarrow \Delta x$
+	\begin{align*}
+		U_{i+1, j} + U_{i-1,j} - 2U_{i,j} + U_{i, j+1} + U_{i,j-1} - 2U_{i,j}
+			+ {n_{i,j}}^2 {\Delta x}^2 k_0^2 U_{i,j} &= \beta^2 {\Delta x}^2 U_{i,j} \\
+		U_{i+1, j} + U_{i-1,j} - 4U_{i,j} + {n_{i,j}}^2 {\Delta x}^2 k_0^2 U_{i,j} + U_{i, j+1} + U_{i,j-1} 
+					 &= \beta^2 {\Delta x}^2 U_{i,j} \\
+		U_{i+1, j} + U_{i-1,j} + ({n_{i,j}}^2 {\Delta x}^2 k_0^2 - 4)U_{i,j} + U_{i, j+1} + U_{i,j-1} 
+					 &= \beta^2 {\Delta x}^2 U_{i,j} \\
+	\end{align*}
+	Let $\alpha_{i,j} =({n_{i,j}}^2 {\Delta x}^2 k_0^2 - 4)$\\
+	\begin{align}
+		\label{eqn:U}
+		U_{i+1, j} + U_{i-1,j} + \alpha_{i,j}U_{i,j} + U_{i, j+1} + U_{i,j-1} 
+					 &= \beta^2 {\Delta x}^2 U_{i,j}
+	\end{align}
+	$U$ is an $m \times n$ matrix. $m$ rows, $n$ columns.\\
+	$U_{i,j}$ is the $i^{th}$ row, $j^{th}$ column. $(1 \leq i \leq m), (1 \leq j \leq n)$.\\
+	We want to rewrite matrix $U$ as a column vector $V$.
+	\begin{figure}	
+	\[ 		
+	\mathbf{U} = 
+	\begin{bmatrix}
+		a_{11}	 	& a_{12}	& a_{13} 	& \hdots	& 	a_{1n}	 	\\
+		a_{21} 		& a_{22}	& 	 		& 			& 	\vdots	 	\\
+		a_{31}		& 			& 	 		& 			&	\vdots		\\
+		\vdots		& 			& 			& \ddots	&	\vdots		\\
+		a_{m1}	 	& a_{m2}	& \hdots	& \hdots	& 	a_{mn}
+	\end{bmatrix}
+	\Rightarrow
+	\begin{bmatrix}
+		a_{11}\\
+		a_{21}\\
+		\vdots\\
+		a_{m1}\\
+		a_{12}\\
+		\vdots\\
+		a_{m2}\\
+		\vdots\\
+		a_{mn}
+	\end{bmatrix}
+	= \mathbf{V}		
+	\]
+	\caption{Mapping U to V}
+	\label{matrix:U-V}	
+	\end{figure}
+	$U_{l,k} \mapsto V_{m(k-1)+l}$*.\\
+	The map is 1-1 because,
+	\begin{align*}
+		\text{Suppose } m(k' - 1) + l' &= m(k-1)+l,\\
+		\Rightarrow	m(k' - k) &= l - l',\\
+		\\
+		\text{then } |m(k'-k)| &\leq m-1, \text{ since $|l - l'| \leq m-1$},\\
+		|k' - k| &\leq  \frac{1}{m} - 1 \\
+		\Rightarrow l=l' &\Rightarrow k=k'. 
+	\end{align*}
+	\textbf{Note that indices i and j of U both start at 1 impies the index of V starts at 1.}\\
+	Below is a tabulation of indices appearing in equation $\ref{eqn:U}$ to see what index of $V$ it maps to.\\
+	\begin{table}[h]
+	\centering
+	\caption{Index Table}
+	\label{index_table}
+	\begin{tabular}{llll}
+	\multicolumn{1}{c}{k} & \multicolumn{1}{c}{l} & \multicolumn{1}{c}{m(l-1) + k}      & \multicolumn{1}{c}{} \\ \cline{1-3}
+	i + 1                 & j                     & \multicolumn{1}{l|}{mi + j}			 	& m(j-1) + i + 1       \\
+	i - 1                 & j                     & \multicolumn{1}{l|}{m(i-2) + j} 		& m(j-1) + i - 1       \\
+	i                     & j                  	  & \multicolumn{1}{l|}{m(i-1) + j}     	& m(j-1) + i          \\
+	i                     & j+1                   & \multicolumn{1}{l|}{m(i-1) +j + 1}      & m(j-1) + i + m\\
+	i                     & j-1                   & \multicolumn{1}{l|}{m(i-1) + j - 1}     & m(j-1) + i - m  \\
+	\end{tabular}
+	\end{table}
+	
+	Equation $\ref{eqn:U}$ becomes\\
+	\begin{align*}
+		V_{m(j-1) + i + 1} + V_{ m(j-1) + i - 1} - \alpha_{i,j} V_{m(j-1) + i} + V_{m(j-1) + i + m} + V_{m(j-1) + i - m} &= \beta^2 {\Delta x}^2 V_{m(j-1) + i }\\
+	\end{align*}
+	rewrite in increasing index order,\\
+	\begin{align}
+		\label{eqn:V}
+		V_{m(j-1) + i -m} + V_{ m(j-1) + i - 1} - \alpha_{i,j} V_{m(j-1) + i} + V_{m(j-1) + i + 1} + V_{m(j-1) + i + m} &= \beta^2 {\Delta x}^2 V_{m(j-1) + i }
+	\end{align}
+	
+	The index on the first and last terms tells us that this relationship isn't valid for every entry $V_k$. So we must find the upper and lower indices for which this relationship is valid; and manually find the other entries. The lowest index has to be $\geq 1$. The highest index $\leq mn$. By substituting $p=m(j-1) + i$,\\
+	\begin{align}
+		V_{p - m} + V_{p - 1} - \alpha_{i,j} V_{p} + V_{p + 1} + V_{p + m} &= \beta^2 {\Delta x}^2 V_{p}
+		\label{eqn:V_p}
+	\end{align}
+	we can see that $m+1 \leq p \leq m(n-1)$.\\
+	
+	Now we manipulate inequalities to find out which (i,j)'s correspond to these limits.
+	Note that $k = k(i,j) = m(j-1) + i$ is also an increasing function of both i and j, (i.e. $\frac{\partial k}{\partial i}$,$\frac{\partial k}{\partial j}>0$), so after finding (i,j)'s satisfying the above, we will know which other one's to exclude. Equations $\ref{eqn:lower_limit}$ and $\ref{eqn:upper_limit}$ shows that ($\ref{eqn:V_p}$) applies to the inner columns of matrix U. \\
+	\begin{equation} \label{eqn:lower_limit}
+		\begin{split}
+		m(j-1) + i - m &\geq 1\\
+		m(j-2) + i &\geq 1\\
+		\Aboxed{i = 1, j &= 2}\\
+		\end{split}
+	\end{equation} 
+
+	\begin{equation} \label{eqn:upper_limit}
+		\begin{split}
+		m(j-1) + i + m &\leq mn\\
+		m(j -n) + i &\leq 0\\
+		\Aboxed{i=m, j&=n-1}\\
+		\end{split}
+	\end{equation}
+	
+	The outer column entries (of matrix U) equal zero because they are boundaries. We now have an eigenvalue problem of an $m(n-2) \times m(n-2)$ matrix. Equation $\ref{eqn:V_p}$ gives the following matrix. \\
+	
+	\begin{figure}[h]	
+	\[ 		 
+	\begin{bmatrix}
+		\alpha_{21} & 1              & 0              & 0              & \hdots & \hdots & 1    & \hdots         & 0              \\
+1            & \alpha_{31} & 1              & 0              & 0      &        &                &                & 0              \\
+0            & 1              & \alpha_{41} & 1              & 0      & 0      &                &                & 0              \\
+0            & 0              & 1              & \alpha_{51} & 1      & 0      & 0              &                & 0              \\
+\vdots       &  0      &                &                & \ddots &        &                &                & \vdots         \\
+\vdots       &  \vdots &                &                &        & \ddots &                &                & \vdots         \\
+\vdots       &  \vdots &                &                &        & \hdots      & \alpha_{n-3,m} & 1              & 0              \\
+\vdots       &  \vdots &                &                &        & 0      & 1              & \alpha_{n-2,m} & 1              \\
+0            & \hdots         & \hdots         & \hdots         & \hdots & \hdots & 0              & 1              & \alpha_{n-1,m}
+	\end{bmatrix}
+	\begin{bmatrix}
+		V_{m+1}\\
+		V_{m+2}\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		V_{m(n-1)}
+	\end{bmatrix}
+	= \beta^2 {\Delta x}^2
+	\begin{bmatrix}
+		V_{m+1}\\
+		V_{m+2}\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		\vdots\\
+		V_{m(n-1)}
+	\end{bmatrix}		
+	\]
+	\caption{Eigen Matrix}
+	\label{matrix:eigenMatrix}	
+	\end{figure}
+	
+	
+	
+	
+\end{document}
+              
